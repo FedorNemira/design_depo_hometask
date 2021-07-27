@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            My blog
+        </title>
+        <link id="vendorsbundle" rel="stylesheet" media="screen, print" href="{{ STATIC_URL }}base/css/vendors.bundle.css">
+        <link id="appbundle" rel="stylesheet" media="screen, print" href="{{ STATIC_URL }}base/css/app.bundle.css">
+        <link rel="stylesheet" media="screen, print" href="{{ STATIC_URL }}base/css/datagrid/datatables/datatables.bundle.css">
+    </head>
+    <body class="mod-bg-1 mod-nav-link ">
+        <main>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                 <span class="fw-300"><i>My blog</i></span>
+                            </h2>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                <table id="dt-basic-example" class="table table-bordered table-hover table-striped w-100">
+                                    <thead class="bg-highlight">
+                                        <tr>
+                                            <th>Article</th>
+                                            <th>Category</th>
+                                            <th>Tags</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for article in articles %}
+                                        <tr>
+                                            <td><a href="{% url "view_article" article.id %}">{{ article.name }}<a></td>
+                                            <td>{{ article.category }}</td>
+                                            <td>{{ article.tags.all|join:", " }}</td>
+                                            <td>{{ article.creation_date }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>            
+                                </table>
+                                {% if user.is_superuser %}
+                                    <h4><b>New post</b></h4>
+                                    <form method = "POST" enctype = "multipart/form-data">
+                                    {% csrf_token %}        
+                                        <input type="text" class="form-control" placeholder="Title" name="title" required>
+                                        <input type="text" class="form-control" placeholder="Category" name="category" required>
+                                        <input type="text" class="form-control" placeholder="Tags(comma separated)" name="tags">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" name="photo"  accept=".jpg,.jpeg,.png">
+                                            <label class="custom-file-label" for="inputGroupFile04">Load image</label>
+                                        </div>
+                                        <textarea class="form-control" rows="10" name="text" required></textarea>
+                                        <div class="mar-top clearfix">
+                                            <button class="btn btn-sm btn-primary pull-right" type="submit">Share</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script src="{{ STATIC_URL }}base/js/vendors.bundle.js"></script>
+        <script src="{{ STATIC_URL }}base/js/app.bundle.js"></script>
+        <script src="{{ STATIC_URL }}base/js/datagrid/datatables/datatables.bundle.js"></script>
+        <script>
+            $(document).ready(function()
+            {
+                $('#dt-basic-example thead tr').clone(true).appendTo('#dt-basic-example thead');
+                $('#dt-basic-example thead tr:eq(1) th').each(function(i)
+                {
+                    var title = $(this).text();
+                    $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Filter ' + title + '" />');
+
+                    $('input', this).on('keyup change', function()
+                    {
+                        if (table.column(i).search() !== this.value)
+                        {
+                            table
+                                .column(i)
+                                .search(this.value)
+                                .draw();
+                        }
+                    });
+            
+                });
+
+                var table = $('#dt-basic-example').DataTable(
+                {
+                    orderCellsTop: true,
+                    fixedHeader: true,
+                    dom: 'lrt',       
+                });
+            });
+        </script>
+    </body>
+</html>

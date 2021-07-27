@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            My blog
+        </title>
+        <link id="vendorsbundle" rel="stylesheet" media="screen, print" href="{{ STATIC_URL }}base/css/vendors.bundle.css">
+        <link id="appbundle" rel="stylesheet" media="screen, print" href="{{ STATIC_URL }}base/css/app.bundle.css">
+    </head>
+    <body class="mod-bg-1 mod-nav-link ">
+        <main>
+            <div class="row">
+                <div class="col-md-12 col-lg-10">
+                    <div class="col-xl-12">
+                        <div id="panel-1" class="panel">
+                            <div class="panel-hdr">
+                                <a href="{% url "articles_list" %}"><b>&lt;&lt;&lt; Back to articles list</b><a>
+                            </div>
+                            <div class="panel-hdr">
+                                <h3>
+                                    <span class="fw-500"><i>{{ article.name }}</i></span>
+                                </h3>
+                            </div>                        
+                            <div class="panel-container show">
+                                <div class="panel-content">
+                                    <div class="article-text">
+                                        <p>
+                                            {% if article.photo %}
+                                                <img src="{{ MEDIA_URL }}{{ article.photo }}" height="300" align="left" vspace="5" hspace="5">
+                                            {% endif %}
+                                            {{ article.text|linebreaks }}
+                                        </p> 
+                                    </div>
+                                    <h6>
+                                        <i><b>Tags: {{ article.tags.all|join:", " }}</b></i>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>  
+                        {% if comments %}
+                            <h4 class="mb-0"><b>Comments</b></h4>
+                            <div class="card text-dark">
+                                <div class="card-body p-4">
+                                    <div class="d-flex flex-start">
+                                        <div>
+                                        {% for comment in comments %}
+                                            <div class="card-body p-4">
+                                                <h6 class="fw-bold mb-1"><b>{{ comment.author }}</b></h6>
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <p class="mb-0">
+                                                    <i>{{ comment.creation_date }}</i>
+                                                    </p>
+                                                </div>
+                                                <p class="mb-0">
+                                                    {{ comment.text }}
+                                                </p>
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="panel-body">
+                        <h4><b>Leave a comment</b></h4>
+                            <form method = "POST" enctype = "multipart/form-data">
+                            {% csrf_token %}        
+                                <input type="text" class="form-control" placeholder="Your name" name="author" required>
+                                <textarea class="form-control" rows="2" placeholder="Enter your comment" name="comment_text" required></textarea>
+                                <div class="mar-top clearfix">
+                                    <button class="btn btn-sm btn-primary pull-right" type="submit">Share</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>               
+                </div>
+            </div>
+
+        </main>
+    </body>
+    <style>
+        .panel-body{
+            width:100%;
+            margin-bottom:50px;
+            margin-top:30px;
+        }
+
+        .pull-right{
+            margin-top:10px;
+        }
+    </style>
+</html>
